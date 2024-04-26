@@ -4,8 +4,9 @@ from urllib.parse import quote
 from datetime import datetime, timedelta
 import csv
 import os
+import article_scraper
 
-def scrape_website(query):
+def scrape_website_search(query):
     articles_data = []
 
     try:
@@ -75,4 +76,4 @@ def scrape_website(query):
 
 if __name__ == '__main__':
     query = input("Enter a query: ")
-    scrape_website(query)
+    scrape_website_search(query)
