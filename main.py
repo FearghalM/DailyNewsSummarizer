@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen, Request
 from urllib.parse import quote
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import os
 
@@ -25,16 +25,19 @@ def scrape_website(query):
         articles = page_soup.find_all('article')
         print(f"Total articles: {len(articles)}")
 
+        time_24_hours_ago = datetime.now() - timedelta(hours=24)  # Get date and time 24 hours ago
+
         for article in articles:
             time_element = article.find('time')
             if time_element:
                 time_published = time_element['datetime'].replace('T', ' ').replace('Z', '')
+                time_published = datetime.strptime(time_published, "%Y-%m-%d %H:%M:%S")
             else:
-                time_published = "Datetime not found for this article"
+                time_published = datetime.min  # Use minimum datetime if time is not found for the article
 
             tags = set(article.find_all('a'))
             for tag in tags:
-                if tag.text.strip():  # Skip empty tags
+                if tag.text.strip() and time_published > time_24_hours_ago:  # Skip empty tags and old articles
                     article_title = tag.text.strip()
                     article_url = f"https://news.google.com/{tag['href'][2:]}"
                     articles_data.append({
@@ -44,7 +47,7 @@ def scrape_website(query):
                     })
 
         # Sort articles by time_published
-        articles_data.sort(key=lambda x: datetime.strptime(x['time_published'], "%Y-%m-%d %H:%M:%S"))
+        articles_data.sort(key=lambda x: x['time_published'])
 
         # Print sorted articles
         for article in articles_data:
@@ -60,7 +63,11 @@ def scrape_website(query):
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writeheader()
             for article in articles_data:
-                writer.writerow(article)
+                writer.writerow({
+                    'time_published': article['time_published'].strftime("%Y-%m-%d %H:%M:%S"),
+                    'article_title': article['article_title'],
+                    'article_url': article['article_url']
+                })
         print(f"Data successfully written to {csv_filename}")
 
     except Exception as e:
