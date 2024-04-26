@@ -16,11 +16,21 @@ def scrape_article(url):
 
         page_soup = soup(html_content, 'html.parser')
 
-        article_content = page_soup.find('article')
-        if article_content:
-            return article_content.text.strip()
-        else:
-            return None
+    
+        title = page_soup.title.string
+        print(f"Title: {title}")
+
+        articles = page_soup.find_all('div', class_='article-body')
+        print(f"Total articles: {len(articles)}")
+        # return text content of the article removing any extra spaces
+        textwithoutspaces = ' '.join([article.text.strip() for article in articles])
+        # add to the csv file
+        with open(f'Articles/{title}.txt', 'a', newline='', encoding='utf-8') as csvfile:
+            fieldnames = ['Article Content']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow({'Article Content': textwithoutspaces})
+
+        return textwithoutspaces
     except Exception as e:
         print(f"Error scraping article: {e}")
         return None
