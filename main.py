@@ -32,14 +32,6 @@ def scrape_website_search(query):
             time_element = article.find('time')
             #<div class="bInasb"><span aria-hidden="true">Martin Pengelly</span><span class="PJK1m">By Martin Pengelly</span></div>
 
-            # Find the div element with the class 'bInasb'
-            author_element = article.find('div', class_='bInasb')
-
-            # Extract the text from the first span element within the div
-            author_name = author_element.find('span').text if author_element else None
-
-            print(f"Author: {author_name}")
-
             if time_element:
                 time_published = time_element['datetime'].replace('T', ' ').replace('Z', '')
                 time_published = datetime.strptime(time_published, "%Y-%m-%d %H:%M:%S")
@@ -49,6 +41,13 @@ def scrape_website_search(query):
             tags = set(article.find_all('a'))
             for tag in tags:
                 if tag.text.strip() and time_published > time_24_hours_ago:  # Skip empty tags and old articles
+                    # Find the div element with the class 'bInasb'
+                    author_element = article.find('div', class_='bInasb')
+
+                    # Extract the text from the first span element within the div
+                    author_name = author_element.find('span').text if author_element else None
+
+                    print(f"Author: {author_name}")
                     article_url = f"https://news.google.com/{tag['href'][2:]}"
                     asa.analyze_article_sentiment(query,article_url,time_published,author_name)
 

@@ -2,6 +2,7 @@ from textblob import TextBlob
 from newspaper import Article
 import requests
 import os
+import text_summarization as ts
 
 def analyze_article_sentiment(query, url,time_published,author_name):
     try:
@@ -29,6 +30,19 @@ def analyze_article_sentiment(query, url,time_published,author_name):
             authors = ', '.join(authors)
         publish_date = time_published
         summary = news_article.summary
+
+        second_summary = ts.extractive_summarization(news_article.text)
+        #compare second_summary to news_article.text
+        print(f"summary length: {len(summary)} second_summary length: {len(second_summary)} news_article.text length: {len(news_article.text)}")
+        # Remove new lines and extra spaces from the second_summary
+        while '  ' in second_summary or '\n\n' in second_summary:
+            second_summary = second_summary.replace('\n\n', ' ')
+            second_summary = second_summary.replace('  ', ' ')
+        
+        #compare the two summaries
+        final_summary = summary if len(summary) > len(second_summary) else second_summary
+
+        print(f"Second Summary: {second_summary}")
         
         # Create Articles directory if it doesn't exist
         if not os.path.exists('Articles'):
@@ -47,7 +61,7 @@ def analyze_article_sentiment(query, url,time_published,author_name):
             txt_file.write(f"Sentiment: {sentiment}\n")
             txt_file.write(f"Authors: {authors}\n")
             txt_file.write(f"Publish Date: {publish_date}\n")
-            txt_file.write(f"Summary: {summary}\n")
+            txt_file.write(f"Summary: {final_summary}\n")
             txt_file.write(f"URL: {response_url}\n\n")
 
         print(f"Data successfully written to {txt_filename}")
