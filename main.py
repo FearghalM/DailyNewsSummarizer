@@ -3,6 +3,7 @@ from urllib.request import urlopen, Request
 from urllib.parse import quote
 from datetime import datetime
 import csv
+import os
 
 def scrape_website(query):
     articles_data = []
@@ -48,9 +49,12 @@ def scrape_website(query):
         # Print sorted articles
         for article in articles_data:
             print(f"Article Time: {article['time_published']} \nArticle Title: {article['article_title']} \nArticle URL: {article['article_url']}")
-       
+
+        # Create Articles directory if it doesn't exist
+        if not os.path.exists('Articles'):
+            os.makedirs('Articles')
         # Append articles data to the CSV file
-        csv_filename = f"{query}_articles.csv"
+        csv_filename = f"Articles/{query}_articles.csv"
         with open(csv_filename, mode='w', newline='', encoding='utf-8') as csv_file:
             fieldnames = ['time_published', 'article_title', 'article_url']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
