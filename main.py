@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import csv
 import os
 import article_sentiment_analysis as asa
-import article_scraper as scraper
 
 sentiments = ('Positive', 'Negative', 'Neutral')
 
@@ -27,13 +26,21 @@ def scrape_website_search(query):
 
         print(f"Title: {page_soup.title.string}")
         articles = page_soup.find_all('article')
-        print(f"Total articles: {len(articles)}")
+        # print(f"Total articles: {len(articles)}")
 
         time_24_hours_ago = datetime.now() - timedelta(hours=24)  # Get date and time 24 hours ago
 
         for article in articles:
             time_element = article.find('time')
-            author_element = article.find('a', {'class': 'bInasb'})
+            #<div class="bInasb"><span aria-hidden="true">Martin Pengelly</span><span class="PJK1m">By Martin Pengelly</span></div>
+
+            # Find the div element with the class 'bInasb'
+            author_element = article.find('div', class_='bInasb')
+
+            # Extract the text from the first span element within the div
+            author_name = author_element.find('span').text if author_element else None
+
+            print(f"Author: {author_name}")
 
             if time_element:
                 time_published = time_element['datetime'].replace('T', ' ').replace('Z', '')
@@ -45,7 +52,7 @@ def scrape_website_search(query):
             for tag in tags:
                 if tag.text.strip() and time_published > time_24_hours_ago:  # Skip empty tags and old articles
                     article_url = f"https://news.google.com/{tag['href'][2:]}"
-                    asa.analyze_article_sentiment(query,article_url,time_published,author_element)
+                    asa.analyze_article_sentiment(query,article_url,time_published,author_name)
 
     except Exception as e:
         print(f"An error occurred: {e}")

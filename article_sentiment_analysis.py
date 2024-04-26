@@ -3,7 +3,7 @@ from newspaper import Article
 import requests
 import os
 
-def analyze_article_sentiment(query, url,time_published,author_element):
+def analyze_article_sentiment(query, url,time_published,author_name):
     try:
         response = requests.head(url, allow_redirects=True, timeout=30)
         if response.history:  # Check if there's any redirect
@@ -21,8 +21,12 @@ def analyze_article_sentiment(query, url,time_published,author_element):
         sentiment_analysis = TextBlob(news_article.text)
         sentiment = 'Positive' if sentiment_analysis.sentiment.polarity > 0 else 'Negative' if sentiment_analysis.sentiment.polarity < 0 else 'Neutral'
         
+        print(f"news_article.authors: {news_article.authors} author_element: {author_name}")
         title = news_article.title
-        authors = news_article.authors if news_article.authors else [author_element.text] if author_element else []
+        authors = author_name if author_name else news_article.authors if news_article.authors else "Unknown"
+        # check if authors is a list
+        if isinstance(authors, list):
+            authors = ', '.join(authors)
         publish_date = time_published
         summary = news_article.summary
         
@@ -37,12 +41,14 @@ def analyze_article_sentiment(query, url,time_published,author_element):
                 if title in check_file.read():
                     print(f"Article already in the file: {title}")
                     return
+                
             # Write data to the text file
             txt_file.write(f"Title: {title}\n")
-            txt_file.write(f"Authors: {', '.join(authors)}\n")
+            txt_file.write(f"Sentiment: {sentiment}\n")
+            txt_file.write(f"Authors: {authors}\n")
             txt_file.write(f"Publish Date: {publish_date}\n")
             txt_file.write(f"Summary: {summary}\n")
-            txt_file.write(f"Sentiment: {sentiment}\n\n")
+            txt_file.write(f"URL: {response_url}\n\n")
         print(f"Data successfully written to {txt_filename}")
     except Exception as e:
         print(f"Error scraping article: {e}")
