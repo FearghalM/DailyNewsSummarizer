@@ -1,31 +1,35 @@
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
+from urllib.parse import quote
 
-try:
-    wiki_url = 'https://en.wikipedia.org/wiki/Genome'
-    with urlopen(wiki_url) as wiki_data:
-        wiki_html = wiki_data.read()
-    page_soup = soup(wiki_html, 'html.parser')
+def scrapeWebsite(query):
+    try:
+        encoded_query = quote(query)
+        url = f"https://news.google.com/search?q={encoded_query}&hl=en-IE&gl=IE&gl=IE&ceid=IE%3Aen"
 
-    genome_table = page_soup.find('table', {'class': 'wikitable sortable'})
-    headers = genome_table.find_all('th')
-    header_titles = [header.text.strip() for header in headers]
+        with urlopen(url) as data:
+            wiki_html = data.read()
+        page_soup = soup(wiki_html, 'html.parser')
 
-    all_rows = genome_table.find_all('tr')[1:]  # Skip the header row
+        print(f"Title: {page_soup.title.string}")
+        articles = page_soup.find_all('article')
+        print(f"Total articles: {len(articles)}")
+        for article in articles:
+            time_element = article.find('time')
+            if time_element:
+                time_element = time_element['datetime'].replace('T', ' ').replace('Z', '')
+            else:
+                print("Datetime not found for this article")
+            # sort by time_element to get the latest news
+            tags = set(article.find_all('a'))
+            for tag in tags:
+                if len(tag.text) > 0:
+                    print(f"Date Time: {time_element} \nTag Subject: {tag.text} \nTag URL: https://news.google.com/{tag['href'][2:]}")
 
-    table_rows = []
-    for row in all_rows:
-        row_data = row.find_all('td')
-        row_values = [data.text.strip() for data in row_data]
-        table_rows.append(row_values)
+    except Exception as e:
+        print("An error occurred:", e)
 
-    filename = 'genome_table.csv'
-    with open(filename, 'w', encoding="utf-8") as f:
-        f.write(','.join(header_titles) + '\n')
-        for row in table_rows:
-            f.write(','.join(row) + '\n')
 
-    print("CSV file generated successfully!")
-
-except Exception as e:
-    print("An error occurred:", e)
+if __name__ == '__main__':
+    query = input("Enter a query: ")
+    scrapeWebsite(query)
