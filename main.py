@@ -9,8 +9,6 @@ import article_sentiment_analysis as asa
 sentiments = ('Positive', 'Negative', 'Neutral')
 
 def scrape_website_search(query):
-    articles_data = []
-
     try:
         encoded_query = quote(query)
         url = f"https://news.google.com/search?q={encoded_query}&hl=en-IE&gl=IE&gl=IE&ceid=IE%3Aen"

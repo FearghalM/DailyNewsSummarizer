@@ -49,10 +49,9 @@ def analyze_article_sentiment(query, url,time_published,author_name):
             txt_file.write(f"Publish Date: {publish_date}\n")
             txt_file.write(f"Summary: {summary}\n")
             txt_file.write(f"URL: {response_url}\n\n")
+
         print(f"Data successfully written to {txt_filename}")
     except Exception as e:
         print(f"Error scraping article: {e}")
         return
 
-# Example usage:
-# analyze_article_sentiment("query_term", "https://www.example.com/article-url")
