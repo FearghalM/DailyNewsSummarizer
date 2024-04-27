@@ -4,15 +4,16 @@ import requests
 import os
 import text_summarization as ts
 
+
 def analyze_article_sentiment(query, url,time_published,author_name):
     try:
         response = requests.head(url, allow_redirects=True, timeout=30)
         if response.history:  # Check if there's any redirect
             response_url = response.url
-            print(f"Redirected URL: {response_url}")
+            # print(f"Redirected URL: {response_url}")
         else:
             response_url = url
-            print(f"URL: {response_url}")
+            # print(f"URL: {response_url}")
 
         news_article = Article(response_url)
         news_article.download()
@@ -22,28 +23,22 @@ def analyze_article_sentiment(query, url,time_published,author_name):
         sentiment_analysis = TextBlob(news_article.text)
         sentiment = 'Positive' if sentiment_analysis.sentiment.polarity > 0 else 'Negative' if sentiment_analysis.sentiment.polarity < 0 else 'Neutral'
         
-        print(f"news_article.authors: {news_article.authors} author_element: {author_name}")
+        # print(f"news_article.authors: {news_article.authors} author_element: {author_name}")
         title = news_article.title
         authors = author_name if author_name else news_article.authors if news_article.authors else "Unknown"
         # check if authors is a list
         if isinstance(authors, list):
             authors = ', '.join(authors)
         publish_date = time_published
-        summary = news_article.summary
+        first_summary = news_article.summary
 
         second_summary = ts.extractive_summarization(news_article.text)
-        #compare second_summary to news_article.text
-        print(f"summary length: {len(summary)} second_summary length: {len(second_summary)} news_article.text length: {len(news_article.text)}")
-        # Remove new lines and extra spaces from the second_summary
-        while '  ' in second_summary or '\n\n' in second_summary:
-            second_summary = second_summary.replace('\n\n', ' ')
-            second_summary = second_summary.replace('  ', ' ')
-        
-        #compare the two summaries
-        final_summary = summary if len(summary) > len(second_summary) else second_summary
+        third_summary = ts.extractive_summarization(first_summary+news_article.text)
+        # Assuming you have three summaries: first_summary, second_summary, and third_summary
+        print(f"First Summary length: {len(first_summary)}, \nSecond Summary length: {len(second_summary)}, \nThird Summary length: {len(third_summary)}")
+        final_summary = '.'.join(set(max(first_summary, second_summary, third_summary, key=len).replace('\n', ' ').replace('  ', ' ').replace('. ', '.\n').split('.'))).lstrip(" .\n,“”’")
 
-        print(f"Second Summary: {second_summary}")
-        
+
         # Create Articles directory if it doesn't exist
         if not os.path.exists('Articles'):
             os.makedirs('Articles')

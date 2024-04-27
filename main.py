@@ -6,8 +6,6 @@ import csv
 import os
 import article_sentiment_analysis as asa
 
-sentiments = ('Positive', 'Negative', 'Neutral')
-
 def scrape_website_search(query):
     try:
         encoded_query = quote(query)
