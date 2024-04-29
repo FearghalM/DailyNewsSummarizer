@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen, Request
 from urllib.parse import quote
 from datetime import datetime, timedelta
-import csv
-import os
 import article_sentiment_analysis as asa
+import save_to_file as stf
+import send_email as se
 
 def scrape_website_search(query):
     try:
@@ -47,7 +47,14 @@ def scrape_website_search(query):
 
                     print(f"Author: {author_name}")
                     article_url = f"https://news.google.com/{tag['href'][2:]}"
-                    asa.analyze_article_sentiment(query,article_url,time_published,author_name)
+                    query, title, sentiment, authors, publish_date, combined_summary, response_url = asa.analyze_article_sentiment(query,article_url,time_published,author_name)
+                    # Add to an array
+                    article_data = (query, title, sentiment, authors, publish_date, combined_summary, response_url)
+                    # combined_summary summaries to see if they are too similar and remove the older ones
+                    stf.save_article_data(*article_data)
+                    
+                    
+                    
 
     except Exception as e:
         print(f"An error occurred: {e}")
