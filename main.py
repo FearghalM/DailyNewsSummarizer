@@ -53,7 +53,7 @@ def scrape_website_search(query):
                     stf.save_article_data(query, title, sentiment, authors, publish_date, combined_summary, response_url)
                     print("Data saved to file")
                     
-                    
+        se.send_email(query)
                     
 
     except Exception as e:

@@ -3,18 +3,15 @@ import os
 def save_article_data(query, title, sentiment, authors, publish_date, combined_summary, response_url):
 
     print(f"Saving data to file for {title}")
-    # Create Articles directory if it doesn't exist
-    if not os.path.exists('Articles'):
-        os.makedirs('Articles')
     
     # Append articles data to the text file
     txt_filename = f"Articles/{query}_articles.txt"
     
-    # Check if the article already exists in the file
-    if os.path.isfile(txt_filename):
-        with open(txt_filename, 'r', encoding='utf-8') as check_file:
-            if any(title in line for line in check_file):
-                print(f"Article already in the file: {title}")
+    # Check if the article already exists in the file or if title is "Title not found"
+    if os.path.exists(txt_filename):
+        with open(txt_filename, mode='r', encoding='utf-8') as txt_file:
+            if title in txt_file.read() or title == "Title not found":
+                print(f"Article already exists in {txt_filename}")
                 return
         
     with open(txt_filename, mode='a', encoding='utf-8') as txt_file:
