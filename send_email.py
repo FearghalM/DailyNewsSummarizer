@@ -2,10 +2,13 @@ import os
 import smtplib
 import ssl
 from email.message import EmailMessage
-import csv
 
-def send_email(subject, message, receiver_email, attachment_path=None):
+def send_email(query):
+    message = f"Please find the attached text file containing articles related to {query}"
+    attachment_path = f"Articles/{query}_articles.txt"
+    subject_of_email = f'New Articles related to {query}'
     sender_email = os.getenv('EMAIL_ADDRESS')
+    receiver_email = os.getenv('EMAIL_ADDRESS')
     password = os.getenv('EMAIL_PASSWORD')
 
     if not sender_email or not password:
@@ -15,7 +18,7 @@ def send_email(subject, message, receiver_email, attachment_path=None):
     msg = EmailMessage()
     msg['From'] = sender_email
     msg['To'] = receiver_email
-    msg['Subject'] = subject
+    msg['Subject'] = subject_of_email
     msg.set_content(message)
 
     if attachment_path:
@@ -33,10 +36,3 @@ def send_email(subject, message, receiver_email, attachment_path=None):
             print("Email sent successfully")
     except Exception as e:
         print(f"Error occurred: {str(e)}")
-
-# Example usage
-subject = 'CSV File Email'
-message = 'Please find the attached CSV file.'
-receiver_email = 'femcmorrow@gmail.com'  # Update with the recipient's email address
-csv_file_path = 'Articles/Ireland_articles.csv'  # Update with the path to your CSV file
-send_email(subject, message, receiver_email, csv_file_path)

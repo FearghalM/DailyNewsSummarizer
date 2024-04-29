@@ -48,10 +48,10 @@ def scrape_website_search(query):
                     print(f"Author: {author_name}")
                     article_url = f"https://news.google.com/{tag['href'][2:]}"
                     query, title, sentiment, authors, publish_date, combined_summary, response_url = asa.analyze_article_sentiment(query,article_url,time_published,author_name)
-                    # Add to an array
-                    article_data = (query, title, sentiment, authors, publish_date, combined_summary, response_url)
-                    # combined_summary summaries to see if they are too similar and remove the older ones
-                    stf.save_article_data(*article_data)
+                    print(f"Title: {title}\nSentiment: {sentiment}\nAuthors: {authors}\nPublish Date: {publish_date}\nSummary: {combined_summary}\nURL: {response_url}")
+                    #saves to file
+                    stf.save_article_data(query, title, sentiment, authors, publish_date, combined_summary, response_url)
+                    print("Data saved to file")
                     
                     
                     

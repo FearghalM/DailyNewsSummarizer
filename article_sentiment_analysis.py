@@ -4,7 +4,7 @@ import requests
 import text_summarization as ts
 
 
-def analyze_article_sentiment(query, url,time_published,author_name):
+def analyze_article_sentiment(query,url,time_published,author_name):
     try:
         response = requests.head(url, allow_redirects=True, timeout=30)
         if response.history:  # Check if there's any redirect
@@ -30,8 +30,13 @@ def analyze_article_sentiment(query, url,time_published,author_name):
             authors = ', '.join(authors)
         publish_date = time_published
         first_summary = news_article.summary
+        text = news_article.text
+        # remove newlines 
+        text = text.replace('\n', ' ')
+        # remove extra spaces
+        text = text.replace('  ', ' ')
 
-        combined_summary = ts.extractive_summarization(first_summary+news_article.text)
+        combined_summary = ts.extractive_summarization(first_summary+", "+text)
 
         # Assuming you have three summaries: first_summary, second_summary, and third_summary
         print(f"First Summary length: {len(first_summary)}, \nSecond Summary length: {len(combined_summary)} ")
@@ -41,5 +46,5 @@ def analyze_article_sentiment(query, url,time_published,author_name):
     
     except Exception as e:
         print(f"Error scraping article: {e}")
-        return
+        return(query, "Title not found", "Sentiment not found", author_name, time_published, "Error", url)
 
