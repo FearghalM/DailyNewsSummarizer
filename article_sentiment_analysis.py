@@ -1,7 +1,6 @@
 from textblob import TextBlob
 from newspaper import Article
 import requests
-import os
 import text_summarization as ts
 
 
@@ -32,34 +31,14 @@ def analyze_article_sentiment(query, url,time_published,author_name):
         publish_date = time_published
         first_summary = news_article.summary
 
-        second_summary = ts.extractive_summarization(news_article.text)
-        third_summary = ts.extractive_summarization(first_summary+news_article.text)
+        combined_summary = ts.extractive_summarization(first_summary+news_article.text)
+
         # Assuming you have three summaries: first_summary, second_summary, and third_summary
-        print(f"First Summary length: {len(first_summary)}, \nSecond Summary length: {len(second_summary)}, \nThird Summary length: {len(third_summary)}")
-        final_summary = '.'.join(set(max(first_summary, second_summary, third_summary, key=len).replace('\n', ' ').replace('  ', ' ').replace('. ', '.\n').split('.'))).lstrip(" .\n,“”’")
+        print(f"First Summary length: {len(first_summary)}, \nSecond Summary length: {len(combined_summary)} ")
 
+        return(query, title, sentiment, authors, publish_date, combined_summary, response_url)
 
-        # Create Articles directory if it doesn't exist
-        if not os.path.exists('Articles'):
-            os.makedirs('Articles')
-        # Append articles data to the text file
-        txt_filename = f"Articles/{query}_articles.txt"
-        with open(txt_filename, mode='a', encoding='utf-8') as txt_file:
-            # Check if the article is already in the file
-            with open(txt_filename, 'r', encoding='utf-8') as check_file:
-                if title in check_file.read():
-                    print(f"Article already in the file: {title}")
-                    return
-                
-            # Write data to the text file
-            txt_file.write(f"Title: {title}\n")
-            txt_file.write(f"Sentiment: {sentiment}\n")
-            txt_file.write(f"Authors: {authors}\n")
-            txt_file.write(f"Publish Date: {publish_date}\n")
-            txt_file.write(f"Summary: {final_summary}\n")
-            txt_file.write(f"URL: {response_url}\n\n")
-
-        print(f"Data successfully written to {txt_filename}")
+    
     except Exception as e:
         print(f"Error scraping article: {e}")
         return
