@@ -60,6 +60,9 @@ def scrape_website_search(query,max_articles,receiver_email):
                     article_count += 1  # Increment the article count
 
         se.send_email(query,receiver_email)
+        # clear the file after sending the email
+        with open(f"Articles/{query}_articles.txt", 'w') as file:
+            file.write("")
                     
 
     except Exception as e:

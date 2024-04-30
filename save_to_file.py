@@ -7,11 +7,16 @@ def save_article_data(query, title, sentiment, authors, publish_date, combined_s
     # Append articles data to the text file
     txt_filename = f"Articles/{query}_articles.txt"
     
-    # Check if the article already exists in the file or if title is "Title not found"
-    if os.path.exists(txt_filename):
-        with open(txt_filename, mode='r', encoding='utf-8') as txt_file:
-            if title in txt_file.read() or "Title not found" in txt_file.read():
-                print(f"Article already exists in {txt_filename}")
+
+    if title == "Title not found":
+        print("Title not found. Skipping...")
+        return
+    
+    # Check if the article already exists in the file
+    if os.path.isfile(txt_filename):
+        with open(txt_filename, 'r', encoding='utf-8') as check_file:
+            if any(title in line for line in check_file):
+                print(f"Article already in the file: {title}")
                 return
         
     with open(txt_filename, mode='a', encoding='utf-8') as txt_file:
