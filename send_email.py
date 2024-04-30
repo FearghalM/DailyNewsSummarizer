@@ -3,12 +3,13 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
-def send_email(query):
+def send_email(query,receiver_email):
     message = f"Please find the attached text file containing articles related to {query}"
     attachment_path = f"Articles/{query}_articles.txt"
     subject_of_email = f'New Articles related to {query}'
     sender_email = os.getenv('EMAIL_ADDRESS')
-    receiver_email = os.getenv('EMAIL_ADDRESS')
+    if receiver_email == None or receiver_email == '':
+        receiver_email = os.getenv('EMAIL_ADDRESS')
     password = os.getenv('EMAIL_PASSWORD')
 
     if not sender_email or not password:

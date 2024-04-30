@@ -10,7 +10,7 @@ def save_article_data(query, title, sentiment, authors, publish_date, combined_s
     # Check if the article already exists in the file or if title is "Title not found"
     if os.path.exists(txt_filename):
         with open(txt_filename, mode='r', encoding='utf-8') as txt_file:
-            if title in txt_file.read() or title == "Title not found":
+            if title in txt_file.read() or "Title not found" in txt_file.read():
                 print(f"Article already exists in {txt_filename}")
                 return
         

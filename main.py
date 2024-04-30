@@ -6,7 +6,7 @@ import article_sentiment_analysis as asa
 import save_to_file as stf
 import send_email as se
 
-def scrape_website_search(query):
+def scrape_website_search(query,max_articles,receiver_email):
     try:
         encoded_query = quote(query)
         url = f"https://news.google.com/search?q={encoded_query}&hl=en-IE&gl=IE&gl=IE&ceid=IE%3Aen"
@@ -26,9 +26,13 @@ def scrape_website_search(query):
 
         time_24_hours_ago = datetime.now() - timedelta(hours=24)  # Get date and time 24 hours ago
 
+        article_count = 0  # Counter for the number of articles scraped
+
         for article in articles:
+            if article_count >= max_articles:
+                break  # Stop scraping if maximum articles limit is reached
+
             time_element = article.find('time')
-            #<div class="bInasb"><span aria-hidden="true">Martin Pengelly</span><span class="PJK1m">By Martin Pengelly</span></div>
 
             if time_element:
                 time_published = time_element['datetime'].replace('T', ' ').replace('Z', '')
@@ -52,8 +56,10 @@ def scrape_website_search(query):
                     #saves to file
                     stf.save_article_data(query, title, sentiment, authors, publish_date, combined_summary, response_url)
                     print("Data saved to file")
-                    
-        se.send_email(query)
+
+                    article_count += 1  # Increment the article count
+
+        se.send_email(query,receiver_email)
                     
 
     except Exception as e:
@@ -61,4 +67,7 @@ def scrape_website_search(query):
 
 if __name__ == '__main__':
     query = input("Enter a query: ")
-    scrape_website_search(query)
+    max_articles = int(input("Enter how many articles to scrape: "))  # User input for maximum articles to scrape
+    receiver_email = input("Enter your email: ")
+    scrape_website_search(query,max_articles, receiver_email)
+
