@@ -1,4 +1,8 @@
 # DailyNewsSummarizer
-DailyNewsSummarizer is a super user-friendly tool that makes staying informed a breeze! Our handy GUI news aggregator delivers quick and easy news updates tailored to your interests. We gather articles from all over, condense them down, and send you a daily email so you can stay in the loop without feeling overwhelmed.
+Hey there! Are you tired of sifting through countless news articles to find updates on your favourite topics? Look no further than DailyNewsSummarizer! Our user-friendly GUI news aggregator makes it easy to stay informed without feeling overwhelmed.
 
-Plus, setting up DailyNewsSummarizer is a piece of cake! It runs on Windows Task Scheduler, so no installation is necessary - just a few clicks and you're good to go. Stay informed without the hassle with DailyNewsSummarizer!
+Simply choose your keywords of interest, select the maximum number of daily emails you'd like to receive, and provide us with your email address. We'll take care of the rest by collecting news articles, summarizing them, and sending you a daily email digest.
+
+One of the best parts? DailyNewsSummarizer is super easy to set up thanks to Windows Task Scheduler. No need for complicated installations - just add your email address and password to the .env file during the initial setup.
+
+Stay updated without the hassle - give DailyNewsSummarizer a try today! 📰✨
